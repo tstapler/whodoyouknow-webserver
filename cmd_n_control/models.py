@@ -2,9 +2,9 @@ from app import db
 from db import Table, Column, Integer, ForeignKey, String, DateTime
 from db.orm import relationship, backref
 
-Base = declarative_base()
+db.Model = declarative_base()
 
-class Party(Base):
+class Party(db.Model):
     """
     The object formerly known as Party, self explanatory
     """
@@ -16,8 +16,14 @@ class Party(Base):
     location = Column(Integer, ForeignKey("location.id"))
     invitations = relationship("Invitation", backref="party")
 
+    def __init__(self, name, start_time, end_time, location):
+        self.name = name
+        self.start_time = start_time
+        self.end_time = end_time
+        self.location = location
 
-class Invitation(Base):
+
+class Invitation(db.Model):
     """
     An invitation, your golden ticket to the best night ever"
     """
@@ -25,9 +31,15 @@ class Invitation(Base):
     id = Column(Integer, primary_key=True)
     party = Column(Integer, ForeignKey('party.id'))
     friend =  Column(Integer, ForeignKey('friend.id'))
+    remaining_invites = Column(Integer())
+
+    def __init__(self, party, friend):
+        self.party = party
+        self.friend = friend
+        self.remaining_invites = 4
 
 
-class Location(Base):
+class Location(db.Model):
     """
     A location, this is where you party (verb)
     """
@@ -37,8 +49,11 @@ class Location(Base):
     parties = relationship("Party", backref="location")
     entrances = relationship("Entrance", backref="location")
 
+    def __init__(self, name):
+        self.name = name
 
-class Entrance(Base):
+
+class Entrance(db.Model):
     """
     An entrance (Usually a door), the way people get into the party
     """
@@ -48,8 +63,13 @@ class Entrance(Base):
     name = Column(String())
     addr = Column(String())
 
+    def __init__(self, location_id, name, addr):
+        self.location_id = location_id
+        self.name = name
+        self.addr = addr
 
-class Friend(Base):
+
+class Friend(db.Model):
     """
     A friend, someone you enjoy spending time with and
     may invite to your party.
@@ -58,9 +78,13 @@ class Friend(Base):
     id = Column(Integer, primary_key=True)
     name = Column(String(128),index= True, unique=True)
     contact_info = relationship("ContactInfo", backref="friend")
-    invitations = relationship("Invitation")
+    invitations = relationship("Invitation", backref="friend")
 
-class ContactInfo(Base):
+    def __init__(self, name):
+        self.name = name
+
+
+class ContactInfo(db.Model):
     """
     Contact Info, your means of getting your friends to the party
     """
