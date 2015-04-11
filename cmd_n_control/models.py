@@ -6,66 +6,67 @@ Base = declarative_base()
 
 class Party(Base):
     """
-    The object formerly known as Party, self explainitory
+    The object formerly known as Party, self explanatory
     """
-
     __tablename__ = 'party'
+    id = column(Interger,primary_key=True)
+    name = Column(String(128), index=True, unique= True)
+    start_time  = Column(DateTime(timezone=True))
+    end_time = Column(DateTime(timezone=True))
+    location = Column(Integer, ForeignKey("location.id"))
+    invitations = relationship("Invitation", backref="party")
 
-    id = db.column(db.Interger,primary_key=True)
-    name = db.Column(db.String(128), index=True, unique= True)
 
-    start_time  = db.Column(db.DateTime(timezone=True))
-    end_time = db.Column(db.DateTime(timezone=True))
-
-    location = db.Column(db.String(128))
-
-    hosts = relationship("guests", order_by="guests.id")
-    guests = relationship("Friend")
+class Invitation(Base):
+    """
+    An invitation, your golden ticket to the best night ever"
+    """
+    __tablename__ = 'invitation'
+    id = Column(Integer, primary_key=True)
+    party = Column(Integer, ForeignKey('party.id'))
+    friend =  Column(Integer, ForeignKey('friend.id'))
 
 
 class Location(Base):
     """
     A location, this is where you party (verb)
     """
-
     __tablename__ = 'location'
+    id = Column(Integer, primary_key=True)
+    name = Column(String())
+    parties = relationship("Party", backref="location")
+    entrances = relationship("Entrance", backref="location")
 
-    id = db.Column(db.Integer, primary_key=True)
-    name = db.Column(db.String())
-    entrances = relationship()
 
 class Entrance(Base):
     """
     An entrance (Usually a door), the way people get into the party
     """
-
     __tablename__ = 'entrance'
+    id = Column(Integer, primary_key=True)
+    location_id = Column(Integer, ForeignKey('location.id'))
+    name = Column(String())
+    addr = Column(String())
 
-    id = db.Column(db.Integer, primary_key=True)
-    name = db.Column(db.String())
-    addr = db.Column(db.String())
 
 class Friend(Base):
     """
     A friend, someone you enjoy spending time with and
     may invite to your party.
     """
-
     __tablename__ = 'friend'
-
-    id = db.Column(db.Integer, primary_key=True)
-    name = db.Column(db.String(128),index= True, unique=True)
-
-    contact_info = relationship("ContactInfo")
+    id = Column(Integer, primary_key=True)
+    name = Column(String(128),index= True, unique=True)
+    contact_info = relationship("ContactInfo", backref="friend")
+    invitations = relationship("Invitation")
 
 class ContactInfo(Base):
     """
     Contact Info, your means of getting your friends to the party
     """
-
     __tablename__ = 'contact_info'
-    id = db.Column(db.Integer, primary_key=True)
+    id = Column(Integer, primary_key=True)
+    friend_id = Column(Integer, ForeignKey('friend.id'))
+    phone_numbers = Column(String(), index=True)
+    email_address = Column(String(), index=True)
 
-    friend_id = relationship(Integer, ForeignKey(''))
-    phone_numbers = db.Column(db.String(), index=True)
-    email_address = db.Column(db.String(), index=True)
