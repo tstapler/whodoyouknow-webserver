@@ -1,26 +1,17 @@
-from app import db
-from db import Table, Column, Integer, ForeignKey, String, DateTime
-from db.orm import relationship, backref
-
-db.Model = declarative_base()
+from flask.ext.sqlalchemy import SQLAlchemy
+db =  SQLAlchemy()
 
 class Party(db.Model):
     """
     The object formerly known as Party, self explanatory
     """
     __tablename__ = 'party'
-    id = column(Interger,primary_key=True)
-    name = Column(String(128), index=True, unique= True)
-    start_time  = Column(DateTime(timezone=True))
-    end_time = Column(DateTime(timezone=True))
-    location = Column(Integer, ForeignKey("location.id"))
-    invitations = relationship("Invitation", backref="party")
-
-    def __init__(self, name, start_time, end_time, location):
-        self.name = name
-        self.start_time = start_time
-        self.end_time = end_time
-        self.location = location
+    id = db.Column(db.Integer,primary_key=True)
+    name = db.Column(db.String(128), index=True, unique= True)
+    start_time  = db.Column(db.DateTime(timezone=True))
+    end_time = db.Column(db.DateTime(timezone=True))
+    party_loc = db.Column(db.Integer, db.ForeignKey("location.id"))
+    invitation = db.relationship("Invitation", backref="party")
 
 
 class Invitation(db.Model):
@@ -28,10 +19,10 @@ class Invitation(db.Model):
     An invitation, your golden ticket to the best night ever"
     """
     __tablename__ = 'invitation'
-    id = Column(Integer, primary_key=True)
-    party = Column(Integer, ForeignKey('party.id'))
-    friend =  Column(Integer, ForeignKey('friend.id'))
-    remaining_invites = Column(Integer())
+    id = db.Column(db.Integer, primary_key=True)
+    party_id = db.Column(db.Integer, db.ForeignKey('party.id'))
+    friend_inv =  db.Column(db.Integer, db.ForeignKey('friend.id'))
+    remaining_invites = db.Column(db.Integer())
 
     def __init__(self, party, friend):
         self.party = party
@@ -44,24 +35,20 @@ class Location(db.Model):
     A location, this is where you party (verb)
     """
     __tablename__ = 'location'
-    id = Column(Integer, primary_key=True)
-    name = Column(String())
-    parties = relationship("Party", backref="location")
-    entrances = relationship("Entrance", backref="location")
-
-    def __init__(self, name):
-        self.name = name
-
+    id = db.Column(db.Integer, primary_key=True)
+    name = db.Column(db.String())
+    parties_here = db.relationship("Party", backref="location")
+    entrances = db.relationship("Entrance", backref="location")
 
 class Entrance(db.Model):
     """
     An entrance (Usually a door), the way people get into the party
     """
     __tablename__ = 'entrance'
-    id = Column(Integer, primary_key=True)
-    location_id = Column(Integer, ForeignKey('location.id'))
-    name = Column(String())
-    addr = Column(String())
+    id = db.Column(db.Integer, primary_key=True)
+    location_id = db.Column(db.Integer, db.ForeignKey('location.id'))
+    name = db.Column(db.String())
+    addr = db.Column(db.String())
 
     def __init__(self, location_id, name, addr):
         self.location_id = location_id
@@ -75,13 +62,10 @@ class Friend(db.Model):
     may invite to your party.
     """
     __tablename__ = 'friend'
-    id = Column(Integer, primary_key=True)
-    name = Column(String(128),index= True, unique=True)
-    contact_info = relationship("ContactInfo", backref="friend")
-    invitations = relationship("Invitation", backref="friend")
-
-    def __init__(self, name):
-        self.name = name
+    id = db.Column(db.Integer, primary_key=True)
+    name = db.Column(db.String(128),index= True, unique=True)
+    contact_info = db.relationship("ContactInfo")
+    friend_inv  = db.relationship("Invitation", backref="friend")
 
 
 class ContactInfo(db.Model):
@@ -89,8 +73,8 @@ class ContactInfo(db.Model):
     Contact Info, your means of getting your friends to the party
     """
     __tablename__ = 'contact_info'
-    id = Column(Integer, primary_key=True)
-    friend_id = Column(Integer, ForeignKey('friend.id'))
-    phone_numbers = Column(String(), index=True)
-    email_address = Column(String(), index=True)
+    id = db.Column(db.Integer, primary_key=True)
+    friend_id = db.Column(db.Integer, db.ForeignKey('friend.id'))
+    phone_numbers = db.Column(db.String(), index=True)
+    email_address = db.Column(db.String(), index=True)
 

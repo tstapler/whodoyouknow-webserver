@@ -1,8 +1,38 @@
+
+<!DOCTYPE html>
 <html>
-    <head>
-        <title>Who do you know?</title>
-    </head>
-    <body>
-        <h1>Hello, {{ user.nickname }}!</h1>
+      <head lang="en">
+          <meta charset="UTF-8">
+              <title>Flask React</title>
+              <meta name="viewport" content="width=device-width, initial-scale=1.0">
+              <!-- styles -->
+            </head>
+          <body>
+              <div class="container">
+                <h1>Flask React</h1>
+                      <br>
+                            <div id="content"></div>
+                                </div>
+                                    <!-- scripts -->
+                                        <script src="http://cdnjs.cloudflare.com/ajax/libs/react/0.12.0/react.js"></script>
+                                            <script src="http://cdnjs.cloudflare.com/ajax/libs/react/0.12.0/JSXTransformer.js"></script></h>
+          </div></title>
+      </head>
+        <script type="text/jsx">
+
+            /***@jsx React.DOM */
+
+            var realPython = React.createClass({
+                render: funciton() {
+                    return (<h2>Greetings, from Real Python!</h2>)
+                }
+            });
+
+            React.render(
+                React.createElement(realPython, null),
+                docment.getElementById('content')
+                );
+
+        </script>
     </body>
 </html>
